@@ -67,37 +67,24 @@ function launchFirework(container) {
 function startFireworks(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return null;
-
   launchFirework(container);
   launchFirework(container);
-
   return setInterval(() => {
     launchFirework(container);
-    if (Math.random() > 0.5) {
-      setTimeout(() => launchFirework(container), 200);
-    }
+    if (Math.random() > 0.5) setTimeout(() => launchFirework(container), 200);
   }, 900);
 }
 
 let fwInterval4 = null;
 let fwInterval5 = null;
+let flowTimeouts = [];
 
-/* ── Progress bar ── */
-function startProgress() {
-  const fill = document.getElementById('progress-fill');
-  if (!fill) return;
-
-  const duration = 2000 + Math.random() * 3000;
-  fill.style.transition = `width ${duration}ms linear`;
-  fill.getBoundingClientRect();
-  fill.style.width = '100%';
-
-  setTimeout(() => {
-    showView('view-4');
-    fwInterval4 = startFireworks('sparks-4');
-  }, duration);
+function clearFlowTimeouts() {
+  flowTimeouts.forEach(id => clearTimeout(id));
+  flowTimeouts = [];
 }
 
+/* ── Progress bar ── */
 function resetProgress() {
   const fill = document.getElementById('progress-fill');
   if (!fill) return;
@@ -105,26 +92,49 @@ function resetProgress() {
   fill.style.width = '0%';
 }
 
+function startProgress() {
+  const fill = document.getElementById('progress-fill');
+  if (!fill) return;
+
+  const duration = 2000 + Math.random() * 3000;
+  fill.style.transition = `width ${duration}ms linear`;
+  fill.getBoundingClientRect(); // force reflow
+  fill.style.width = '100%';
+
+  const t = setTimeout(() => {
+    showView('view-4');
+    fwInterval4 = startFireworks('sparks-4');
+  }, duration);
+  flowTimeouts.push(t);
+}
+
 /* ── Entry point ── */
 function startFlow() {
+  clearFlowTimeouts();
+
   if (isTngApp()) {
     showView('view-4');
     fwInterval4 = startFireworks('sparks-4');
-  } else {
-    showView('view-1');
-    setTimeout(() => showView('view-2'), 1500);
-    setTimeout(() => {
-      showView('view-3');
-      resetProgress();
-      setTimeout(() => startProgress(), 50);
-    }, 1500 + 2000);
+    return;
   }
+
+  showView('view-1');
+
+  flowTimeouts.push(setTimeout(() => {
+    showView('view-2');
+  }, 1500));
+
+  flowTimeouts.push(setTimeout(() => {
+    showView('view-3');
+    resetProgress();
+    setTimeout(() => startProgress(), 50);
+  }, 3500));
 }
 
 /* ── Init ── */
 startFlow();
 
-/* ── Back button (view-4 → restart) ── */
+/* ── Back button ── */
 document.getElementById('btn-back').addEventListener('click', () => {
   clearInterval(fwInterval4);
   fwInterval4 = null;
@@ -150,25 +160,4 @@ document.getElementById('btn-close').addEventListener('click', () => {
   if (c5) c5.innerHTML = '';
 
   startFlow();
-});  fwInterval5 = startFireworks('sparks-5');
-});
-
-/* ── State 5: close → restart ── */
-document.getElementById('btn-close').addEventListener('click', () => {
-  clearInterval(fwInterval5);
-  const c5 = document.getElementById('sparks-5');
-  if (c5) c5.innerHTML = '';
-
-  const fill = document.getElementById('progress-fill');
-  if (fill) {
-    fill.style.transition = 'none';
-    fill.style.width = '0%';
-  }
-
-  showView('view-1');
-  setTimeout(() => showView('view-2'), 1500);
-  setTimeout(() => {
-    showView('view-3');
-    setTimeout(() => startProgress(), 50);
-  }, 1500 + 2000);
 });
