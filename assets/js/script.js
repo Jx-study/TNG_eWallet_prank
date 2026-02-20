@@ -14,18 +14,21 @@ function showView(id) {
   if (target) target.classList.add('active');
 }
 
+function isTngApp() {
+  return navigator.userAgent.toLowerCase().includes('tngdwebview');
+}
+
 /* ── Fireworks ── */
 const COLORS = ['#FFE566', '#FFB300', '#FF6E6E', '#FFF', '#FF4D4D', '#FFECB3', '#FF9800'];
 
 function launchFirework(container) {
-  const x = 10 + Math.random() * 80; // % from left
-  const y = 5  + Math.random() * 45; // % from top
-  const count = 10 + Math.floor(Math.random() * 8); // 10–17 rays
-  const dur   = 0.7 + Math.random() * 0.5;           // 0.7–1.2 s
-  const len   = 40  + Math.random() * 50;             // px travel distance
+  const x = 10 + Math.random() * 80;
+  const y = 5  + Math.random() * 45;
+  const count = 10 + Math.floor(Math.random() * 8);
+  const dur   = 0.7 + Math.random() * 0.5;
+  const len   = 40  + Math.random() * 50;
   const color = COLORS[Math.floor(Math.random() * COLORS.length)];
 
-  // Centre flash
   const flash = document.createElement('div');
   flash.className = 'fw-flash';
   const size = 20 + Math.random() * 20;
@@ -38,10 +41,9 @@ function launchFirework(container) {
   `;
   container.appendChild(flash);
 
-  // Ray particles
   for (let i = 0; i < count; i++) {
     const angle  = (360 / count) * i;
-    const height = 2 + Math.random() * 3;  // thickness
+    const height = 2 + Math.random() * 3;
     const p = document.createElement('div');
     p.className = 'fw-particle';
     p.style.cssText = `
@@ -56,7 +58,6 @@ function launchFirework(container) {
     container.appendChild(p);
   }
 
-  // Remove after animation finishes
   setTimeout(() => {
     flash.remove();
     container.querySelectorAll('.fw-particle').forEach(p => p.remove());
@@ -67,13 +68,11 @@ function startFireworks(containerId) {
   const container = document.getElementById(containerId);
   if (!container) return null;
 
-  // Burst immediately, then repeat
   launchFirework(container);
   launchFirework(container);
 
   return setInterval(() => {
     launchFirework(container);
-    // Occasionally two at once
     if (Math.random() > 0.5) {
       setTimeout(() => launchFirework(container), 200);
     }
@@ -83,14 +82,14 @@ function startFireworks(containerId) {
 let fwInterval4 = null;
 let fwInterval5 = null;
 
-/* ── State 3: progress bar ── */
+/* ── Progress bar ── */
 function startProgress() {
   const fill = document.getElementById('progress-fill');
   if (!fill) return;
 
-  const duration = 2000 + Math.random() * 3000; // 2–5 s
+  const duration = 2000 + Math.random() * 3000;
   fill.style.transition = `width ${duration}ms linear`;
-  fill.getBoundingClientRect(); // force reflow
+  fill.getBoundingClientRect();
   fill.style.width = '100%';
 
   setTimeout(() => {
@@ -99,39 +98,59 @@ function startProgress() {
   }, duration);
 }
 
-/* ── Auto flow: 1 → 2 → 3 ── */
-showView('view-1');
-setTimeout(() => showView('view-2'), 1500);
-setTimeout(() => {
-  showView('view-3');
-  startProgress();
-}, 1500 + 2000);
+function resetProgress() {
+  const fill = document.getElementById('progress-fill');
+  if (!fill) return;
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+}
 
-/* ── State 3: back button ── */
+/* ── Entry point ── */
+function startFlow() {
+  if (isTngApp()) {
+    showView('view-4');
+    fwInterval4 = startFireworks('sparks-4');
+  } else {
+    showView('view-1');
+    setTimeout(() => showView('view-2'), 1500);
+    setTimeout(() => {
+      showView('view-3');
+      resetProgress();
+      setTimeout(() => startProgress(), 50);
+    }, 1500 + 2000);
+  }
+}
+
+/* ── Init ── */
+startFlow();
+
+/* ── Back button (view-4 → restart) ── */
 document.getElementById('btn-back').addEventListener('click', () => {
   clearInterval(fwInterval4);
-  showView('view-1');
-  setTimeout(() => showView('view-2'), 1500);
-  setTimeout(() => {
-    showView('view-3');
-    const fill = document.getElementById('progress-fill');
-    if (fill) {
-      fill.style.transition = 'none';
-      fill.style.width = '0%';
-    }
-    setTimeout(() => startProgress(), 50);
-  }, 1500 + 2000);
+  fwInterval4 = null;
+  startFlow();
 });
 
-/* ── State 4 → 5 ── */
+/* ── view-4 → view-5 ── */
 document.getElementById('btn-open').addEventListener('click', () => {
   clearInterval(fwInterval4);
-  // clear leftover particles
+  fwInterval4 = null;
   const c4 = document.getElementById('sparks-4');
   if (c4) c4.innerHTML = '';
 
   showView('view-5');
   fwInterval5 = startFireworks('sparks-5');
+});
+
+/* ── view-5: close → restart ── */
+document.getElementById('btn-close').addEventListener('click', () => {
+  clearInterval(fwInterval5);
+  fwInterval5 = null;
+  const c5 = document.getElementById('sparks-5');
+  if (c5) c5.innerHTML = '';
+
+  startFlow();
+});  fwInterval5 = startFireworks('sparks-5');
 });
 
 /* ── State 5: close → restart ── */
