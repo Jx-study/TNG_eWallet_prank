@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Touch 'n Go eWallet: Money Packet</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <!-- VIEW 1: Red CNY Splash -->
+  <div id="view-1" class="view active">
+    <div class="cny-logo">
+      <img class="cny-logo-img" src="assets/images/logo_01.png" alt="logo_cny">
+    </div>
+  </div>
+
+  <!-- VIEW 2: Blue Formal Splash -->
+  <div id="view-2" class="view">
+    <div class="formal-logo">
+      <img class="formal-logo-image" src="assets/images/logo_02.png" alt="logo_formal">
+      <span class="formal-logo-tm">TM</span>
+    </div>
+  </div>
+
+  <!-- VIEW 3: Loading Page -->
+  <div id="view-3" class="view view-white">
+    <div class="loading-header">
+      <button id="btn-back" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <div class="loading-progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+    <div class="loading-body"></div>
+  </div>
+
+  <!-- VIEW 4: Red Packet Unopened -->
+  <div id="view-4" class="view view-festive">
+    <div id="sparks-4" class="sparks"></div>
+
+    <div id="packet-4" class="packet packet-closed">
+      <div class="packet-flap">
+        <div class="packet-flap-arch"></div>
+        <div class="packet-logo-wrap">
+          <div class="packet-logo">
+            <img class="packet-logo-img" src="assets/images/logo_02.png" alt="logo_format">
+          </div>
+        </div>
+      </div>
+      <div class="packet-body">
+        <div class="packet-sender">
+          <span class="sender-from">来自</span>
+          <span class="sender-name">TEE JIN XIN</span>
+        </div>
+        <button id="btn-open" class="open-btn">立即打开</button>
+      </div>
+      <div class="packet-footer">
+        <i class="fa-solid fa-volume-low"></i>
+        <span>调高铃声一起庆祝节日吧</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIEW 5: Red Packet Opened (The Payoff) -->
+  <div id="view-5" class="view view-festive">
+    <div id="sparks-5" class="sparks"></div>
+
+    <div id="packet-5" class="packet packet-opened">
+      <div class="packet-top-opened"></div>
+      <div class="packet-receipt">
+        <img src="assets/images/meme.gif" alt="hahaha" class="gif-andy">
+      </div>
+      <div class="packet-body">
+        <div class="packet-sender">
+          <span class="sender-from">来自</span>
+          <span class="sender-name">TEE JIN XIN</span>
+          <span class="sender-note">新年快乐！</span>
+        </div>
+        <a id="btn-detail" class="open-btn" href="https://youtu.be/0MrA0B1BRXY" target="_blank" rel="noopener">更多详情</a>
+        <button id="btn-close" class="close-link">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/script.js"></script>
+</body>
+</html>
